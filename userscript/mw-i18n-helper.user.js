@@ -238,16 +238,20 @@
     return Math.round(virtBase + (realNow() - realBase) * factor);
   };
 
+  let speedLabel = null;
+
   function setSpeed(k) {
     // 重新基准，避免切换瞬间产生巨大的时间跳跃
     virtBase = Date.now();
     realBase = realNow();
     factor = k;
     S.speed = k;
-    document.querySelectorAll('[data-speed]').forEach((el) => {
-      el.style.background = el.dataset.speed === String(k) ? '#1e8449' : '';
-      el.style.color = el.dataset.speed === String(k) ? '#fff' : '';
+
+    document.querySelectorAll('#mwq [data-speed]').forEach((el) => {
+      el.classList.toggle('on', Number(el.dataset.speed) === k);
     });
+    if (speedLabel) speedLabel.textContent = k === 1 ? '时间流速' : `时间流速 ×${k}`;
+
     toast(k === 1 ? '时间恢复正常' : `时间 ×${k}`);
   }
 
@@ -378,7 +382,7 @@
   /* ---------------------------------------------------------------- UI */
 
   const CSS = `
-    #mwq{position:fixed;right:12px;bottom:12px;z-index:2147483000;width:236px;
+    #mwq{position:fixed;right:12px;bottom:12px;z-index:2147483000;width:252px;
       font:12px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#e8e8e8;
       background:rgba(22,24,29,.94);border:1px solid rgba(255,255,255,.12);border-radius:10px;
       box-shadow:0 6px 24px rgba(0,0,0,.45);backdrop-filter:blur(6px);user-select:none}
@@ -396,9 +400,18 @@
     #mwq button.primary{background:rgba(46,125,50,.85)}
     #mwq button.primary:hover{background:rgba(56,142,60,1)}
     #mwq button.warn{background:rgba(151,42,42,.8)}
+    #mwq button.on{background:rgba(46,125,50,.95);color:#fff;font-weight:600}
+    #mwq .row.speed{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+    #mwq .row.speed button{flex:none;padding:5px 0;font-size:11px}
     #mwq .label{opacity:.55;font-size:10px;margin:8px 0 4px;letter-spacing:.05em}
+    #mwq .label:first-child{margin-top:0}
     #mwq .stat{display:flex;justify-content:space-between;font-size:11px;opacity:.85;margin-bottom:4px}
     #mwq .stat b{color:#ffd166;font-weight:600}
+    #mwq .custom{display:flex;gap:4px;margin-bottom:6px}
+    #mwq .custom input{all:unset;flex:1;min-width:0;background:rgba(255,255,255,.09);
+      border-radius:5px;padding:4px 8px;font-size:11px;color:#fff}
+    #mwq .custom input::placeholder{color:rgba(255,255,255,.35)}
+    #mwq .custom button{flex:0 0 auto;min-width:46px}
     #mwq.collapsed .body{display:none}
   `;
 
@@ -469,6 +482,38 @@
     const body = document.createElement('div');
     body.className = 'body';
 
+    /* 时间流速 —— 放在最上面，这是最常用的功能 */
+    speedLabel = label('时间流速');
+    body.append(speedLabel);
+
+    const PRESETS = [1, 2, 5, 10, 20, 50, 100, 1000];
+    const speedBtns = PRESETS.map((k) => {
+      const b = btn(k === 1 ? '×1' : '×' + k, () => setSpeed(k));
+      b.dataset.speed = String(k);
+      if (k === 1) b.classList.add('on');
+      return b;
+    });
+    const rowA = document.createElement('div');
+    rowA.className = 'row speed';
+    rowA.append(...speedBtns);
+    body.append(rowA);
+
+    const custom = document.createElement('div');
+    custom.className = 'custom';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = '自定义倍率，如 300';
+    const apply = btn('应用', () => {
+      const v = Number(String(input.value).replace(/[^\d.]/g, ''));
+      if (!Number.isFinite(v) || v <= 0) return fail('填个正数');
+      setSpeed(Math.min(v, 100000));
+    });
+    custom.append(input, apply);
+    body.append(custom);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') apply.click();
+    });
+
     /* 快进 */
     body.append(label('资源（即时生效）'));
     body.append(row(
@@ -489,16 +534,6 @@
       btn('训练拉满', boostTraining),
       btn('一键全做', everything, 'primary')
     ));
-
-    /* 时间 */
-    body.append(label('时间流速'));
-    const speeds = [1, 2, 5, 10];
-    body.append(row(...speeds.map((k) => {
-      const b = btn(k === 1 ? '×1' : '×' + k, () => setSpeed(k));
-      b.dataset.speed = String(k);
-      if (k === 1) { b.style.background = '#1e8449'; b.style.color = '#fff'; }
-      return b;
-    })));
 
     /* 质检 */
     body.append(label('漏翻收集'));
