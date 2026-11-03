@@ -39,6 +39,8 @@ tools/
 ├── make-save.mjs      # 生成毕业存档（把一份普通存档改造成全解锁）
 ├── i18n-tour.mjs      # 注入毕业存档 → 点开全部页签 → 输出未翻译清单
 └── i18n-fragments.mjs # 静态碎片扫描：从源码模板字符串还原「真实文本节点」逐条比对
+userscript/
+└── mw-i18n-helper.user.js  # 油猴脚本：游戏内快进 + 边玩边收集漏翻（见 userscript/README.md）
 ```
 
 ## 使用

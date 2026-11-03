@@ -107,6 +107,14 @@ try {
   await client.send('Page.navigate', { url: URL_TARGET });
   await sleep(WAIT_MS);
 
+  // 可选：把一份脚本（例如油猴脚本）注入页面执行，用于联调
+  const injectFile = arg('inject', '');
+  if (injectFile) {
+    const code = fs.readFileSync(path.resolve(injectFile), 'utf8');
+    await client.send('Runtime.evaluate', { expression: code, returnByValue: false });
+    await sleep(1500);
+  }
+
   const result = await client.send('Runtime.evaluate', {
     expression: EXPR,
     returnByValue: true,

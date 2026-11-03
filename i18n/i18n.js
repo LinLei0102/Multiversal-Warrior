@@ -534,6 +534,7 @@
       items.sort(function (a, b) { return b.count - a.count; });
       return items;
     },
+    clearMissing: function () { missing.clear(); return true; },
     exportMissing: function () {
       var items = [];
       missing.forEach(function (count, text) { items.push({ text: text, count: count }); });
