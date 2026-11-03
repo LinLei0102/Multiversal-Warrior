@@ -1,0 +1,37 @@
+/* =============================================================================
+ * i18n/i18n.css — 中文排版微调
+ * -----------------------------------------------------------------------------
+ * 游戏原本按「窄体像素拉丁字体」设计了大量固定宽高的小按钮，
+ * 中文方块字在同样字号下更宽，容易挤成两行或溢出。
+ *
+ * 这里的原则是：**不改字号**（em 会和父级字号叠加，越套越小），
+ * 只允许单行并收紧左右内边距，让文字在极窄按钮里也能完整显示。
+ *
+ * 想换中文字体，改 --i18n-cjk-font 即可。
+ * ========================================================================== */
+
+:root {
+  --i18n-cjk-font: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+
+/* 极窄按钮：中文不换行，宁可略微溢出也不折成两行 */
+html[data-mw-lang="zh-CN"] button,
+html[data-mw-lang="zh-CN"] .grassFont {
+  white-space: nowrap;
+  overflow: visible;
+  line-height: 1.05;
+  padding-left: 0.05em;
+  padding-right: 0.05em;
+  letter-spacing: -0.02em;
+}
+
+/* 居中文案 */
+html[data-mw-lang="zh-CN"] .centerDiv,
+html[data-mw-lang="zh-CN"] .centerText {
+  line-height: 1.2;
+}
+
+/* 数值等宽，避免小数点与指数符号被中文字体撑开 */
+html[data-mw-lang="zh-CN"] .boldBlackBorder {
+  font-variant-numeric: tabular-nums;
+}
