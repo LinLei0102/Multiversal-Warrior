@@ -145,6 +145,11 @@ patchChildren(save.IUniversal.treasures, () => ({ active: true, level: 1, num: 1
 patchChildren(save.IUniversal.forge, () => ({ unlocked: true, level: '1' }));
 patchChildren(save.IUniversal.mine, () => ({ unlocked: true, level: '1' }));
 patchChildren(save.IUniversal.spires, () => ({ active: true, level: '1' }));
+
+/* 狩猎：解锁全部猎物并升到 10 级，否则「狩猎奖励」整块不渲染（req() 不满足） */
+patchChildren(save.IFight.normalHunting, () => ({ unlocked: true, level: '10' }));
+patchChildren(save.IFight.normalHuntingRewards, () => ({ unlocked: true, level: '1' }));
+patchChildren(save.IFight.huntingMulti, () => ({ unlocked: true }));
 for (const groupKey of ['treasureFormation', 'treasureArmy', 'treasureEquipment', 'treasureAugments', 'treasureUpgrade', 'potionUpgrade', 'potionAutoUpgrade', 'potionSource', 'potionFusion', 'coreItem', 'equipment', 'golemTypes', 'armyLoadout', 'energyUpgrades']) {
   patchChildren(save.IUniversal[groupKey], () => ({ unlocked: true }));
 }
